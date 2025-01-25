@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konverter Bilangan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1e1e1e;
+            font-size: 16px;
+            color: white;
+        }
+        .container {
+            background: #333;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .display {
+            width: 100%;
+            padding: 20px;
+            font-size: 32px;
+            border-radius: 6px;
+            background-color: #444;
+            color: white;
+            border: none;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 20px;
+            font-size: 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background: #555;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background: #666;
+        }
+
+        /* Ganti warna tombol menjadi warna senada */
+        .btn-operator {
+            background: #6c757d; /* Warna abu-abu */
+        }
+        .btn-operator:hover {
+            background: #5a6268;
+        }
+        .btn-clear {
+            background: #868e96; /* Warna abu-abu lebih terang */
+        }
+        .btn-clear:hover {
+            background: #6c757d;
+        }
+        .btn-convert {
+            background: #495057; /* Warna abu-abu gelap */
+        }
+        .btn-convert:hover {
+            background: #343a40;
+        }
+        .btn-select {
+            background: #adb5bd; /* Warna abu-abu lebih terang */
+        }
+        .btn-select:hover {
+            background: #6c757d;
+        }
+        .btn-equal {
+            background: #495057; /* Warna abu-abu gelap */
+        }
+        .btn-equal:hover {
+            background: #343a40;
+        }
+
+        /* Styling untuk hasil konversi */
+        .result {
+            margin-top: 15px;
+            font-size: 18px;
+            text-align: left;
+            color: #fff;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none; /* Sembunyikan hasil konversi */
+        }
+
+        .result p {
+            margin: 5px 0;
+        }
+
+        .result span {
+            font-weight: bold;
+            color: #66cc66;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Konverter Bilangan</h2>
+        
+        <input type="text" id="inputNumber" class="display" placeholder="Masukkan bilangan" disabled>
+        <select id="inputBase" class="display">
+            <option value="2">Biner</option>
+            <option value="10" selected>Desimal</option>
+            <option value="8">Oktal</option>
+            <option value="16">Heksadesimal</option>
+        </select>
+
+        <!-- Pindahkan hasil konversi ke atas grid tombol angka, tetapi sembunyikan dengan display: none -->
+        <div class="result" id="resultSection">
+            <p><strong>Biner:</strong> <span id="binaryResult">-</span></p>
+            <p><strong>Desimal:</strong> <span id="decimalResult">-</span></p>
+            <p><strong>Oktal:</strong> <span id="octalResult">-</span></p>
+            <p><strong>Heksadesimal:</strong> <span id="hexResult">-</span></p>
+        </div>
+
+        <div class="btn-grid">
+            <button onclick="appendNumber(7)">7</button>
+            <button onclick="appendNumber(8)">8</button>
+            <button onclick="appendNumber(9)">9</button>
+            <button onclick="appendOperator('+')" class="btn-operator">+</button>
+            
+            <button onclick="appendNumber(4)">4</button>
+            <button onclick="appendNumber(5)">5</button>
+            <button onclick="appendNumber(6)">6</button>
+            <button onclick="appendOperator('-')" class="btn-operator">-</button>
+            
+            <button onclick="appendNumber(1)">1</button>
+            <button onclick="appendNumber(2)">2</button>
+            <button onclick="appendNumber(3)">3</button>
+            <button onclick="appendOperator('*')" class="btn-operator">*</button>
+            
+            <button onclick="appendNumber(0)">0</button>
+            <button onclick="clearDisplay()" class="btn-clear">C</button>
+            <button onclick="convertNumber()" class="btn-convert">Konversi</button>
+            <button onclick="appendOperator('/')" class="btn-operator">/</button>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '';
+        
+        // Menampilkan input di layar kalkulator
+        function updateDisplay() {
+            document.getElementById('inputNumber').value = currentInput;
+        }
+
+        // Menambahkan angka ke input
+        function appendNumber(number) {
+            currentInput += number;
+            updateDisplay();
+        }
+
+        // Menambahkan operator ke input (untuk kalkulator)
+        function appendOperator(operator) {
+            currentInput += ' ' + operator + ' ';
+            updateDisplay();
+        }
+
+        // Mengonversi bilangan sesuai dengan basis yang dipilih
+        function convertNumber() {
+            let number = currentInput;
+            let base = parseInt(document.getElementById("inputBase").value);
+            
+            if (!number) {
+                alert("Masukkan bilangan yang valid!");
+                return;
+            }
+            
+            let decimalValue = parseInt(number, base);
+            if (isNaN(decimalValue)) {
+                alert("Bilangan tidak valid untuk basis yang dipilih!");
+                return;
+            }
+
+            // Menampilkan hasil konversi dengan mengubah display menjadi block
+            document.getElementById("resultSection").style.display = 'block';
+
+            document.getElementById("binaryResult").innerText = decimalValue.toString(2);
+            document.getElementById("decimalResult").innerText = decimalValue.toString(10);
+            document.getElementById("octalResult").innerText = decimalValue.toString(8);
+            document.getElementById("hexResult").innerText = decimalValue.toString(16).toUpperCase();
+        }
+
+        // Menghapus input dan menyembunyikan hasil konversi
+        function clearDisplay() {
+            currentInput = '';
+            updateDisplay();
+            document.getElementById("resultSection").style.display = 'none'; // Sembunyikan hasil konversi
+        }
+    </script>
+</body>
+</html>
